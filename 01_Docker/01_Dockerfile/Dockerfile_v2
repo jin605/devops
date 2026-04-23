@@ -1,0 +1,12 @@
+# 베이스 이미지를 ubuntu:latest로 지정
+FROM ubuntu:latest
+# 작성 레이블 생성
+LABEL maintainer="hong123 <hong123@beyond.com>"
+# 버전 레이블 생성
+LABEL version="3.0"
+RUN ["bin/bash", "-c", "apt update"]
+RUN ["bin/bash", "-c", "apt -y install sudo"]
+RUN ["bin/bash", "-c", "sudo apt install net-tools"]
+# ENTRYPOINT와 CMD를 함계 사용하면 ENTRYPOINT 명령어의 인자로 CMD를 사용한다.
+ENTRYPOINT [ "bin/bash", "-c" ]
+CMD ["ifconfig"] 
