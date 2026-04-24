@@ -13,5 +13,5 @@ ENV SPRING_PROFILES_ACTIVE=live
 EXPOSE 8089
 # 작업 디렉터리를 /root로 변경
 WORKDIR /root
-# 컨테이너 실행 시 university-0.0.1-SNAPSHOT.jar 파일을 실행하도록 설정d
+# 컨테이너 실행 시 university-0.0.1-SNAPSHOT.jar 파일을 실행하도록 설정
 CMD [ "java", "-jar", "university-0.0.1-SNAPSHOT.jar" ]
