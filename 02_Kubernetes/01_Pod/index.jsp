@@ -8,7 +8,7 @@
     <title>Test Web</title>
 </head>
 <body>
-    <h1>TEST WEB v1</h1>
+    <h1>TEST WEB v3</h1>
 
     Server IP Address : <%=inet.getHostAddress()%>
 </body>

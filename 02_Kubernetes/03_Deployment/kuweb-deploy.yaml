@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kuweb-deploy
+  annotations:
+    kubernetes.io/change-cause: "Deployment Created"
 spec:
   replicas: 3
   selector:
@@ -15,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kuweb
-          image: jin604/testweb:1.0
+          image: jin604/testweb:3.0
           resources:
             requests:
               memory: "128Mi"
