@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kuweb-pod
+  # namespace: kube-test
+  # labels:
+  #   app: kuweb-label
+spec:
+  containers:
+  - name: kuweb
+    image: jin604/testweb:1.0
+    resources:
+      # 최소 자원 요구량
+      requests:
+        memory: "128Mi"
+        cpu: "500m"
+      # 최대 자원 요구량
+      limits:
+        memory: "256Mi"
+        cpu: "1000m"
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+
+  # - name: alpine-linux
+  #   image: jin604/alpine-linux:3.0
+  #   resources:
+  #     requests:
+  #       memory: "64Mi"
+  #       cpu: "250m"
+  #     limits:
+  #       memory: "128Mi"
+  #       cpu: "500m"
+  #   command:
+  #   - cat 
+  #   tty: true
