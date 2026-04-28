@@ -4,7 +4,7 @@ metadata:
   name: department-api-deploy
   namespace: university
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: department-api
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: department-api
-        image: jin604/department-service:1.0
+        image: jin604/department-service:4.0
         resources:
           requests:
             memory: "128Mi"
@@ -25,3 +25,27 @@ spec:
             cpu: "1000m"
         ports:
         - containerPort: 8088
+        # 컨테이너 안의 애플리케이션이 시작되었는지 확인한다.
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8088
+          # 실패를 허용하는 최대 횟수
+          failureThreshold: 10
+          # 재요청 주기(10초마다 상태를 확인)
+          periodSeconds: 10
+        # 컨테이너 안의 애플리케이션이 살아있는지 지속적으로 확인한다.
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8088
+          # 최초 지연 시간
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        # 컨테이너 안의 애플리케이션이 실제로 서비스 요청에 응답할 수 있는지 확인한다.
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8088
+          initialDelaySeconds: 5
+          periodSeconds: 5
