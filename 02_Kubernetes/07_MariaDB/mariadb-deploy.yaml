@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deploy
+  namespace: university
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb-app
+  template:
+    metadata:
+      labels:
+        app: mariadb-app
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:latest
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: global-config
+              key: TIME_ZONE
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: ROOT_PASSWORD
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mariadb-volume
+          mountPath: /var/lib/mysql
+      volumes: 
+      - name: mariadb-volume
+        persistentVolumeClaim:
+          claimName: mariadb-pvc

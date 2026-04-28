@@ -19,9 +19,8 @@ spec:
         memory: "256Mi"
         cpu: "1000m"
     ports:
-      - containerPort: 8080
-        protocol: TCP
-
+    - containerPort: 8080
+      protocol: TCP
   # - name: alpine-linux
   #   image: jin604/alpine-linux:3.0
   #   resources:
@@ -32,5 +31,5 @@ spec:
   #       memory: "128Mi"
   #       cpu: "500m"
   #   command:
-  #   - cat 
+  #   - cat
   #   tty: true

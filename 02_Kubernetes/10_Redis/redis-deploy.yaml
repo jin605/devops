@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deploy
+  namespace: university
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-app
+  template:
+    metadata:
+      labels:
+        app: redis-app
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        args:
+        - "redis-server"
+        - "--aclfile"
+        - "/usr/local/etc/redis/users.acl"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: global-config
+              key: TIME_ZONE
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: reids-acl-volume
+          mountPath: /usr/local/etc/redis/users.acl
+          # 불륨 전체가 아닌 특정 파일만 마운트한다.
+          subPath: users.acl
+      volumes: 
+      - name: reids-acl-volume
+        # redis-acl이라는 ConfigMap을 파일 형태로 변환해서 볼륨으로 제공한다.
+        configMap:
+          name: redis-acl
+          items:
+          # ConfigMap의 특정 Key(users.acl)를 서냍ㄱ해서 해당 값을 파일로 생성하고,
+          # 파일의 이름을 path(users.acl)로 지정한다.
+          - key: users.acl
+            path: users.acl

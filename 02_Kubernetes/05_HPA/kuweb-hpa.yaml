@@ -1,0 +1,29 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kuweb-hpa
+spec:
+  # HPA가 확장할 대상(Deployment)을 지정한다.
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kuweb-deploy
+  # 최소 파드의 수
+  minReplicas: 3
+  # 최대 파드의 수
+  maxReplicas: 10
+  metrics:
+  # Pod의 평균 CPU 사용률이 5%를 초과하면 Autoscaling을 수행한다.
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 5
+  # Pod의 평균 메모리 사용률이 80%를 초과하면 Autoscaling을 수행한다.
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

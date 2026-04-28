@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-acl
+  namespace: university
+data:
+  users.acl: |
+    user default off
+    user beyond on >beyond ~blacklist:* ~refresh:* +@read +@write -@admin -@dangerous +info
+    user admin on >admin ~* +@all

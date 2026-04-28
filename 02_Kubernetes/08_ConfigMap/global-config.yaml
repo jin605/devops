@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-config
+  namespace: university
+# 실제 사용하려는 설정값을 작성한다.
+data:
+  TIME_ZONE: Asia/Seoul
