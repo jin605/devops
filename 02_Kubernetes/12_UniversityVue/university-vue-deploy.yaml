@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: university-vue-deploy
+  namespace: university
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: university-vue
+  template:
+    metadata:
+      labels:
+        app: university-vue
+    spec:
+      containers:
+      - name: university-vue
+        image: jin604/university-vue:1.0
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 80

@@ -4,10 +4,10 @@ metadata:
   name: department-api-service
   namespace: university
 spec:
-  type: NodePort
+  # type: NodePort
   selector:
     app: department-api
   ports:
   - port: 8088
     targetPort: 8088
-    nodePort: 30021
+    # nodePort: 30021
