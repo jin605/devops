@@ -29,11 +29,13 @@ kubectl delete pod emptydir-pod hostpath-pod --ignore-not-found
 이미 있으면 넘어가도 됩니다.
 
 ### macOS / Linux (zsh/bash)
+
 ```bash
 kubectl get ns university >/dev/null 2>&1 || kubectl create ns university
 ```
 
 ### Windows (PowerShell)
+
 ```powershell
 kubectl get ns university *> $null; if ($LASTEXITCODE -ne 0) { kubectl create ns university }
 ```
@@ -64,15 +66,58 @@ kubectl -n university get pvc mariadb-pvc
 ## 3) 08_ConfigMap + 09_Secret 적용 (선행 리소스)
 
 > `mariadb-deploy.yaml`, `redis-deploy.yaml`이 아래 리소스를 참조합니다.
+>
 > - ConfigMap: `global-config`, `redis-acl`
 > - Secret: `mariadb-secret`
 
 ```bash
 kubectl apply -f 02_Kubernetes/08_ConfigMap/global-config.yaml
 kubectl apply -f 02_Kubernetes/08_ConfigMap/redis-acl-config.yaml
+
 kubectl apply -f 02_Kubernetes/09_Secret/mariadb-secret.yaml
 kubectl -n university get configmap global-config redis-acl
 kubectl -n university get secret mariadb-secret
+
+```
+
+```
+global-config.yaml
+→ ConfigMap
+→ TIME_ZONE=Asia/Seoul
+→ MariaDB/Redis 공통 시간대 설정
+
+mariadb-secret.yaml
+→ Secret
+→ MariaDB root 비밀번호 저장
+→ MARIADB_ROOT_PASSWORD로 사용
+
+redis-acl-config.yaml
+→ ConfigMap
+→ Redis ACL 파일 저장
+→ Redis 사용자/비밀번호/권한 설정
+
+ACL은 Kubernetes 리소스 종류가 아닙니다.
+ACL은 Redis 내부 설정 내용이에요.
+
+MariaDB 비밀번호 → Secret
+공통 시간대 → ConfigMap
+Redis ACL 파일 → ConfigMap
+
+근데 보안적으로 더 좋은 구조는:
+MariaDB 비밀번호 → Secret
+공통 시간대 → ConfigMap
+Redis ACL 파일 또는 Redis 비밀번호 → Secret
+
+Kubernetes ConfigMap
+        ↓
+users.acl 파일을 만들어서 Pod 안에 넣어줌
+        ↓
+Redis가 그 users.acl 파일을 읽음
+        ↓
+Redis 사용자/권한 설정 적용
+
+ConfigMap/Secret은 K8s가 설정을 전달하는 방식이고,
+ACL/my.cnf/application.yml은 각 프로그램이 이해하는 설정 형식이다.
 ```
 
 ---
@@ -129,7 +174,7 @@ kubectl get all -n university
 
 ---
 
-## 9) 13_Ingress + 14_CertManager (Helm + apply 혼합)
+## 9) 13_Ingress 컨트롤러+ 14_CertManager (Helm + apply 혼합)
 
 > 이 파트는 `kubectl apply`만으로는 안 되고, **Ingress-NGINX / cert-manager는 Helm 설치가 필요**합니다.
 > 강의에서 사용한 차트 Repo/버전이 있을 수 있으니 강사님께 아래 커맨드가 맞는지 확인받아주세요.
@@ -179,8 +224,8 @@ kubectl -n university get ingress university-ingress
 
 강사님께 질문할 것(핵심):
 
-1) Mac(Docker Desktop)에서 `hostPath`는 어떤 경로로 잡는 게 정답인지?  
-2) 아니면 `hostPath` 대신 다른 방식(예: local-path StorageClass, emptyDir 등)으로 진행하는지?
+1. Mac(Docker Desktop)에서 `hostPath`는 어떤 경로로 잡는 게 정답인지?
+2. 아니면 `hostPath` 대신 다른 방식(예: local-path StorageClass, emptyDir 등)으로 진행하는지?
 
 ---
 
