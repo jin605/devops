@@ -131,6 +131,15 @@ kubectl -n university get pod -l app=mariadb-app
 kubectl -n university get svc mariadb-service
 ```
 
+```
+Pod = 실제 MariaDB 실행 중인 컨테이너
+Service = MariaDB에 안정적으로 접속하기 위한 고정 주소
+
+Service = 고정 주소 + Pod 묶기 + 내부 로드밸런싱
+
+
+```
+
 ---
 
 ## 5) 10_Redis 적용
@@ -142,9 +151,53 @@ kubectl -n university get pod -l app=redis-app
 kubectl -n university get svc redis-service
 ```
 
+```
+redis-acl ConfigMap
+        ↓
+users.acl 파일로 컨테이너 안에 마운트
+        ↓
+/usr/local/etc/redis/users.acl
+        ↓
+args에서 redis-server --aclfile 경로로 지정
+        ↓
+Redis가 시작하면서 ACL 설정 읽음
+
+```
+
+```
+먼저 Redis Pod 접속:
+kubectl exec -it -n university deploy/redis-deploy -- redis-cli
+
+beyond 사용자로 로그인
+AUTH beyond beyond
+
+SCAN으로 refresh:* 조회
+SCAN 0 MATCH refresh:*
+```
+
+---
+
 ---
 
 ## 6) 11_DepartmentService 적용
+
+> `department-api-deploy.yaml`이 사용하는 이미지가 로컬에 없으면 `ImagePullBackOff`가 발생할 수 있으므로, 먼저 Docker 이미지를 빌드합니다.
+
+### 6-1) DepartmentService 이미지 빌드
+
+```bash
+cd 02_Kubernetes/11_DepartmentService
+docker build -t jin604/department-service:1.0 .
+cd ../../..
+```
+
+이미지 확인:
+
+```bash
+docker images | grep department-service
+```
+
+### 6-2) DepartmentService Deployment / Service 적용
 
 ```bash
 kubectl apply -f 02_Kubernetes/11_DepartmentService/department-api-deploy.yaml
@@ -153,9 +206,36 @@ kubectl -n university get pod -l app=department-api
 kubectl -n university get svc department-api-service
 ```
 
+이미 Deployment가 `ImagePullBackOff` 상태로 떠 있었다면, 이미지 빌드 후 다시 시작합니다.
+
+```bash
+kubectl rollout restart deploy/department-api-deploy -n university
+kubectl rollout status deploy/department-api-deploy -n university
+```
+
+---
+
 ---
 
 ## 7) 12_UniversityVue 적용
+
+> `university-vue-deploy.yaml`이 사용하는 이미지가 로컬에 없으면 `ImagePullBackOff`가 발생할 수 있으므로, 먼저 Docker 이미지를 빌드합니다.
+
+### 7-1) UniversityVue 이미지 빌드
+
+```bash
+cd 02_Kubernetes/12_UniversityVue
+docker build -t jin604/university-vue:1.0 .
+cd ../../..
+```
+
+이미지 확인:
+
+```bash
+docker images | grep university-vue
+```
+
+### 7-2) UniversityVue Deployment / Service 적용
 
 ```bash
 kubectl apply -f 02_Kubernetes/12_UniversityVue/university-vue-deploy.yaml
@@ -163,6 +243,15 @@ kubectl apply -f 02_Kubernetes/12_UniversityVue/university-vue-service.yaml
 kubectl -n university get pod -l app=university-vue
 kubectl -n university get svc university-vue-service
 ```
+
+이미 Deployment가 `ImagePullBackOff` 상태로 떠 있었다면, 이미지 빌드 후 다시 시작합니다.
+
+```bash
+kubectl rollout restart deploy/university-vue-deploy -n university
+kubectl rollout status deploy/university-vue-deploy -n university
+```
+
+---
 
 ---
 
