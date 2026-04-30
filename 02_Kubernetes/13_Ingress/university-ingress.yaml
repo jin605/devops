@@ -3,9 +3,16 @@ kind: Ingress
 metadata:
   name: university-ingress
   namespace: university
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
 spec:
   # 라우팅 규칙을 적용할 인그레스 컨트롤러를 선택한다.
   ingressClassName: nginx
+  tls:
+  - secretName: university-tls-secret
+    hosts:
+    - api.department.beyond.com
+    - university.beyond.com
   # 호스트 기반의 라우팅(Host-Based Routing)
   # 하나의 인그레스에서 여러 도메인 이름에 대해 서로 다른 서비스로 요청을 라우팅한다.
   rules:
