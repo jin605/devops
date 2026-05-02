@@ -489,7 +489,7 @@ controller:
   customTemplate:
     configMapName: ""
     configMapKey: ""
-  service:
+  service: 
     # -- Enable controller services or not. This does not influence the creation of either the admission webhook or the metrics service.
     enabled: true
     external:
