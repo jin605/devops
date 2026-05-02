@@ -1,6 +1,8 @@
-# Argo CD Flow
+# Argo CD Runbook
 
 이 문서는 현재 프로젝트에서 Argo CD가 맡는 역할과 실제 설정값을 정리한 것이다.
+
+목표는 Argo CD Application이 Manifest Repository를 감시하고, Git에 선언된 Kubernetes manifest를 클러스터에 자동으로 sync하도록 구성하는 것이다. Jenkins가 Manifest Repository의 image tag를 수정하면 Argo CD가 변경을 감지하고 `university` namespace의 애플리케이션을 새 Docker image로 재배포한다.
 
 ## Argo CD의 역할
 

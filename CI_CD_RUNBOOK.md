@@ -1,6 +1,8 @@
-# CI/CD Full Flow
+# CI/CD Runbook
 
 이 문서는 현재 구성한 전체 CI/CD + GitOps CD 흐름을 정리한 것이다.
+
+목표는 개발자가 Source Repository에 push하면 Jenkins가 애플리케이션을 빌드하고 Docker image를 DockerHub에 push한 뒤, Manifest Repository의 image tag를 갱신하도록 만드는 것이다. 이후 Argo CD가 Manifest Repository 변경을 감지해서 Kubernetes에 sync하고, 최종 배포 상태를 Discord 알림으로 확인한다.
 
 ## 최종 상태
 
