@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: department-api-active
+  namespace: university
+spec:
+  type: ClusterIP
+  selector:
+    app: department-api
+  ports:
+  - port: 8088
+    targetPort: 8088
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: department-api-preview
+  namespace: university
+spec:
+  type: ClusterIP
+  selector:
+    app: department-api
+  ports:
+  - port: 8088
+    targetPort: 8088

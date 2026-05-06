@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: university-ingress
+  namespace: university
+  labels:
+    name: university-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: university-tls-secret
+    hosts:
+    - api.department.beyond.com
+    - api.department-preview.beyond.com
+    - university.beyond.com
+    - university-preview.beyond.com
+  rules:
+  - host: api.department.beyond.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: department-api-active
+            port: 
+              number: 8088
+  - host: api.department-preview.beyond.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: department-api-preview
+            port: 
+              number: 8088
+  - host: university.beyond.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service: 
+            name: university-vue-active
+            port:
+              number: 80
+  - host: university-preview.beyond.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service: 
+            name: university-vue-preview
+            port:
+              number: 80

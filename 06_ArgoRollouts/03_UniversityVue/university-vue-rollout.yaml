@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: university-vue-rollout
+  namespace: university
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: university-vue
+  template:
+    metadata:
+      labels:
+        app: university-vue
+    spec:
+      containers:
+      - name: university-vue
+        image: jin604/university-vue:74
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 80
+  strategy:
+    blueGreen:
+      activeService: university-vue-active
+      previewService: university-vue-preview
+      # 자동 승격 설정 (Promote 수동 없이 자동 전환)
+      autoPromotionEnabled: true
+      # 자동 승격 지연 (30초 지연)
+      autoPromotionSeconds: 30
+      # 이전 버전의 ReplicaSet을 일정 시간 유지 (롤백 대비)
+      scaleDownDelaySeconds: 30

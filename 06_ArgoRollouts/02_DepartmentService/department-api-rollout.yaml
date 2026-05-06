@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: department-api-rollout
+  namespace: university
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: department-api
+  template:
+    metadata:
+      labels:
+        app: department-api
+    spec:
+      containers:
+      - name: department-api
+        image: jin604/department-service:73
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 8088
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8088
+          failureThreshold: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8088
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8088
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  strategy:
+    blueGreen:
+      # 현재 운영 트래픽을 처리 중인 서비스(Service)
+      activeService: department-api-active
+      # 새 버전을 검증하기 위한 서비스(Service)
+      previewService: department-api-preview
+      # 자동 승격 여부 (false인 경우 Preview → Active 전환을 수동으로 수행)
+      autoPromotionEnabled: false

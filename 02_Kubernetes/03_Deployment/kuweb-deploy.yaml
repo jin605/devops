@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kuweb
-          image: jin604/testweb:3.0
+          image: jin604/testweb:4.0
           resources:
             requests:
               memory: "128Mi"
